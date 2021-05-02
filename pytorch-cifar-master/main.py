@@ -23,9 +23,9 @@ def print_model_size(mdl):
   os.remove('tmp.pt')
 
 def print_profiler_stats():
-    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
-    print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=10))
-
+    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
+    print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=20))
+# Things Jonyhu added
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -161,7 +161,7 @@ def test(epoch):
         best_acc = acc
 
 with profiler.profile(profile_memory = True, record_shapes = True) as prof:
-    for epoch in range(start_epoch, start_epoch+1):
+    for epoch in range(start_epoch, start_epoch+200):
         with profiler.record_function("train"):
             train(epoch)
         with profiler.record_function("test"):
