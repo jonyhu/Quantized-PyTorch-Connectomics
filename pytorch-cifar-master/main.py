@@ -161,7 +161,7 @@ def test(epoch):
         best_acc = acc
 
 with profiler.profile(profile_memory = True, record_shapes = True) as prof:
-    for epoch in range(start_epoch, start_epoch+200):
+    for epoch in range(start_epoch, start_epoch+1):
         with profiler.record_function("train")
             train(epoch)
         with profile.record_function("test")
@@ -169,10 +169,12 @@ with profiler.profile(profile_memory = True, record_shapes = True) as prof:
         scheduler.step()
 
 
-
+# print the stats
 print_model_size(net)
+print_profiler_stats()
+
+# save for later use
 torch.save(net, 'resnet50_full.pth')
 torch.save(net.state_dict(), 'resnet50_weights.pth')
 
 
-print_profiler_stats()
