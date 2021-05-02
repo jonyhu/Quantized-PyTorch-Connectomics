@@ -14,8 +14,17 @@ import argparse
 from models import *
 from utils import progress_bar
 
-def profiler():
+# Things Jonyhu added
+import torch.autograd.profiler as profiler
+
+def print_model_size(mdl):
+  torch.save(mdl.state_dict(), "tmp.pt")
+  print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
+  os.remove('tmp.pt')
+
+def print_profiler_stats():
     print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
+    print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=10))
 
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
@@ -151,8 +160,19 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
+with profiler.profile(profile_memory = True, record_shapes = True) as prof:
+    for epoch in range(start_epoch, start_epoch+200):
+        with profiler.record_function("train")
+            train(epoch)
+        with profile.record_function("test")
+            test(epoch)
+        scheduler.step()
 
-for epoch in range(start_epoch, start_epoch+200):
-    train(epoch)
-    test(epoch)
-    scheduler.step()
+
+
+print_model_size(net)
+torch.save(net, 'resnet50_full.pth')
+torch.save(net.state_dict(), 'resnet50_weights.pth')
+
+
+print_profiler_stats()
