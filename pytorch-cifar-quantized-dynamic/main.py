@@ -14,9 +14,6 @@ import argparse
 from models import *
 from utils import progress_bar
 
-def profiler():
-    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
-
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -71,8 +68,7 @@ print('==> Building model..')
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
 # net = RegNetX_200MF()
-# net = SimpleDLA()
-net = ResNet50()
+net = SimpleDLA()
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
