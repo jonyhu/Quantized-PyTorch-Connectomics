@@ -162,9 +162,9 @@ def test(epoch):
 
 with profiler.profile(profile_memory = True, record_shapes = True) as prof:
     for epoch in range(start_epoch, start_epoch+1):
-        with profiler.record_function("train")
+        with profiler.record_function("train"):
             train(epoch)
-        with profile.record_function("test")
+        with profile.record_function("test"):
             test(epoch)
         scheduler.step()
 
