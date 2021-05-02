@@ -23,8 +23,7 @@ def print_model_size(mdl):
   os.remove('tmp.pt')
 
 def print_profiler_stats():
-    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=20))
-    print(prof.key_averages().table(sort_by="self_cpu_memory_usage", row_limit=20))
+    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
 # Things Jonyhu added
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
