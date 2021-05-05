@@ -14,7 +14,7 @@ import argparse
 from models import *
 from utils import progress_bar
 
-# Things Jonyhu added
+### Things Jonyhu added
 import torch.autograd.profiler as profiler
 
 def print_model_size(mdl):
@@ -24,7 +24,7 @@ def print_model_size(mdl):
 
 def print_profiler_stats():
     print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
-# Things Jonyhu added
+### Things Jonyhu added
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -82,6 +82,7 @@ print('==> Building model..')
 # net = SimpleDLA()
 net = ResNet50()
 net = net.to(device)
+
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
@@ -159,14 +160,16 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
-with profiler.profile(profile_memory = True, record_shapes = True) as prof:
-    for epoch in range(start_epoch, start_epoch+200):
-        with profiler.record_function("train"):
-            train(epoch)
-        with profiler.record_function("test"):
-            test(epoch)
-        scheduler.step()
+# with profiler.profile(profile_memory = True, record_shapes = True) as prof:
+#     for epoch in range(start_epoch, start_epoch+200):
+#         with profiler.record_function("train"):
+#             train(epoch)
+#         with profiler.record_function("test"):
+#             test(epoch)
+#         scheduler.step()
 
+
+# jonyhu contribution
 
 # print the stats
 print_model_size(net)

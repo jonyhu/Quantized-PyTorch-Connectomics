@@ -55,7 +55,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-# net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -68,7 +68,8 @@ print('==> Building model..')
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
 # net = RegNetX_200MF()
-net = SimpleDLA()
+# net = SimpleDLA()
+# net = ResNet50()
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -152,3 +153,34 @@ for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
     test(epoch)
     scheduler.step()
+
+### Things Jonyhu added
+import torch.autograd.profiler as profiler
+def print_profiler_stats():
+    print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=30))
+
+def print_model_size(mdl):
+  torch.save(mdl.state_dict(), "tmp.pt")
+  print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
+  os.remove('tmp.pt')
+
+# print the stats
+print_model_size(net)
+
+# save for later use
+torch.save(net, 'resnet18_full.pth')
+torch.save(net.state_dict(), 'resnet18_weights.pth')
+
+
+# # Post Training Static Quantization
+# backend = "fbgemm"
+# model.qconfig = torch.quantization.get_default_qconfig(backend)
+# torch.backends.quantized.engine = backend
+# model_static_quantized = torch.quantization.prepare(model, inplace = False)
+# model_static_quantized = torch.quantization.convert(model_static_quantized, inplace = False)
+
+# print_model_size(model_static_quantized)
+
+
+
+
