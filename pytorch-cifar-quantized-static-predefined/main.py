@@ -156,6 +156,7 @@ for epoch in range(start_epoch, start_epoch+200):
 
 # Save the model
 torch.save(net.state_dict(), 'resnet18_weights.pth')
+print_model_size(net)
 
 # Move the model to the CPU for quantization
 net.to('cpu')
@@ -167,6 +168,6 @@ torch.backends.quantized.engine = backend
 net_static_quantized = torch.quantization.prepare(net, inplace = False)
 net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
+# SAve the quantized model
 torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
-
 print_model_size(net_static_quantized)
