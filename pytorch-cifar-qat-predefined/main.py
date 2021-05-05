@@ -68,7 +68,8 @@ print('==> Building model..')
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
 # net = RegNetX_200MF()
-net = SimpleDLA()
+# net = SimpleDLA()
+net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -90,7 +91,7 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 
 # Training
-def train(epoch):
+def train(epoch, net):
     print('\nEpoch: %d' % epoch)
     net.train()
     train_loss = 0
@@ -113,7 +114,7 @@ def train(epoch):
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
 
-def test(epoch):
+def test(epoch, net):
     global best_acc
     net.eval()
     test_loss = 0
@@ -148,7 +149,25 @@ def test(epoch):
         best_acc = acc
 
 
+# Quantization Aware Training
+backend = "fbgemm"
+net.qconfig = torch.quantization.get_default_qat_qconfig(backend)
+net_qat = torch.quantization.prepare_qat(net, inplace=False)
+net_qat.to(device)
+
+# Training
 for epoch in range(start_epoch, start_epoch+200):
-    train(epoch)
-    test(epoch)
+    train(epoch, net_qat)
+    test(epoch, net_qat)
     scheduler.step()
+
+
+# Move the model to the CPU for quantization
+net_qat.to('cpu')
+net_qat = torch.quantization.convert(net_qat.eval(), inplace=False)
+
+
+# Save model
+torch.save(net_qat.state_dict(), 'resnet18_qat_weights.pth')
+print_model_size(net_qat)
+
