@@ -189,9 +189,8 @@ with profiler.profile(profile_memory=True, record_shapes=True) as prof:
         test(1)
 
 # # Accuracy of qunatized model
-net = net_static_quantized
-with profiler.profile(profile_memory=True, record_shapes=True) as prof:
+    net = net_static_quantized
     with profiler.record_function("Quantized Model Inference"):
         test(1)
 
-print(prof.key_averages().table(sort_by="cpu_memory_usage", row_limit=10))
+print(prof.key_averages().table(sort_by="cpu_memory_usage", row_limit=30))
