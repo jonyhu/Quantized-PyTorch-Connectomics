@@ -186,3 +186,7 @@ print_model_size(net_static_quantized)
 
 net.to('cuda')
 test(1)
+
+net = net_static_quantized
+net.to('cuda')
+test(1)
