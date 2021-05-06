@@ -172,15 +172,15 @@ net.load_state_dict(torch.load('resnet18_weights_predefined.pth'))
 print_model_size(net)
 
 # # Move the model to the CPU for quantization
-# net.to('cpu')
+net.to('cpu')
 
 # # Post Training Static Quantization
-# backend = "fbgemm"
-# net.qconfig = torch.quantization.get_default_qconfig(backend)
-# torch.backends.quantized.engine = backend
-# net_static_quantized = torch.quantization.prepare(net, inplace = False)
-# net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
+backend = "fbgemm"
+net.qconfig = torch.quantization.get_default_qconfig(backend)
+torch.backends.quantized.engine = backend
+net_static_quantized = torch.quantization.prepare(net, inplace = False)
+net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
 # # SAve the quantized model
-# torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
-# print_model_size(net_static_quantized)
+torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
+print_model_size(net_static_quantized)
