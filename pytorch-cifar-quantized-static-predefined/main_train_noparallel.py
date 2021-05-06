@@ -177,10 +177,18 @@ test(1)
 
 # # Post Training Static Quantization
 net.eval()
+net.fuse_model()
 backend = "fbgemm"
 net.qconfig = torch.quantization.get_default_qconfig(backend)
 torch.backends.quantized.engine = backend
+
 net_static_quantized = torch.quantization.prepare(net, inplace = False)
+net_static_quantized.eval()
+
+for batch, target in trainloader:
+    net_static_quantized(batch)
+
+
 net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
 # # Save the quantized model
