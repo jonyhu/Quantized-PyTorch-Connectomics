@@ -7,6 +7,7 @@ import torch.backends.cudnn as cudnn
 
 import torchvision
 import torchvision.transforms as transforms
+import torch.autograd.profiler as profiler
 
 import os
 import argparse
@@ -15,11 +16,11 @@ from models import *
 from utils import progress_bar
 
 
+
 def print_model_size(mdl):
   torch.save(mdl.state_dict(), "tmp.pt")
   print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
   os.remove('tmp.pt')
-
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -154,7 +155,7 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+300):
+for epoch in range(start_epoch, start_epoch+1):
     train(epoch)
     test(epoch)
     scheduler.step()
@@ -183,8 +184,14 @@ torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quanti
 print_model_size(net_static_quantized)
 
 # Accuracy of non-quantized model
-test(1)
+with profiler.profile(profile_memory=True, record_shapes=True) as prof:
+    with profiler.record_function("Non-quantized Inference"):
+        test(1)
 
 # # Accuracy of qunatized model
 net = net_static_quantized
-test(1)
+with profiler.profile(profile_memory=True, record_shapes=True) as prof:
+    with profiler.record_function("Quantized Model Inference"):
+        test(1)
+
+print(prof.key_averages().table(sort_by="cpu_memory_usage", row_limit=10))
