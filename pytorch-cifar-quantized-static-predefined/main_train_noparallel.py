@@ -48,12 +48,12 @@ transform_test = transforms.Compose([
 trainset = torchvision.datasets.CIFAR10(
     root='./data', train=True, download=True, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=128, shuffle=True, num_workers=2)
+    trainset, batch_size=128, shuffle=True, num_workers=1)
 
 testset = torchvision.datasets.CIFAR10(
     root='./data', train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=100, shuffle=False, num_workers=2)
+    testset, batch_size=100, shuffle=False, num_workers=1)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer',
            'dog', 'frog', 'horse', 'ship', 'truck')
@@ -92,7 +92,7 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=args.lr,
                       momentum=0.9, weight_decay=5e-4)
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=300)
 
 
 # Training
@@ -154,22 +154,21 @@ def test(epoch):
         best_acc = acc
 
 
-# for epoch in range(start_epoch, start_epoch+10):
-#     train(epoch)
-#     test(epoch)
-#     scheduler.step()
+for epoch in range(start_epoch, start_epoch+1):
+    train(epoch)
+    test(epoch)
+    scheduler.step()
 
 
-
-
-# # Save the model after training for 200 epochs
-# torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
+# Save the model after training for 200 epochs
+torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
 
 # # Load the model
-net.load_state_dict(torch.load('resnet18_noparallel_weights.pth'))
+# net.load_state_dict(torch.load('resnet18_noparallel_weights.pth'))
 print_model_size(net)
 
-# # Move the model to the CPU for quantization
+# Move the model to the CPU for quantization
+device = 'cpu'
 net.to('cpu')
 
 # # Post Training Static Quantization
@@ -183,13 +182,9 @@ net_static_quantized = torch.quantization.convert(net_static_quantized, inplace 
 torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
 
-device = 'cpu'
-
-# # Accuracy of non-quantized model
-# net.to('cpu')
-# test(1)
+# Accuracy of non-quantized model
+test(1)
 
 # # Accuracy of qunatized model
 net = net_static_quantized
-net.to('cpu')
 test(1)
