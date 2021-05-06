@@ -184,6 +184,7 @@ net_static_quantized = torch.quantization.convert(net_static_quantized, inplace 
 torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
 
+test(1)
 
 def accuracy(net):
     global best_acc
