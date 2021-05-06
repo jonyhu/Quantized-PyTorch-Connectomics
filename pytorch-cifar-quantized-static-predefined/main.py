@@ -77,9 +77,9 @@ print('==> Building model..')
 # net = SimpleDLA()
 net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
 net = net.to(device)
-# if device == 'cuda':
-#     net = torch.nn.DataParallel(net)
-#     cudnn.benchmark = True
+if device == 'cuda':
+    net = torch.nn.DataParallel(net)
+    cudnn.benchmark = True
 
 if args.resume:
     # Load checkpoint.
@@ -184,4 +184,5 @@ net_static_quantized = torch.quantization.convert(net_static_quantized, inplace 
 torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
 
+net.to('gpu')
 test(1)
