@@ -15,6 +15,12 @@ from models import *
 from utils import progress_bar
 
 
+def print_model_size(mdl):
+  torch.save(mdl.state_dict(), "tmp.pt")
+  print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
+  os.remove('tmp.pt')
+
+
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true',
@@ -149,31 +155,32 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+200):
-    train(epoch)
-    test(epoch)
-    scheduler.step()
-
-def print_model_size(mdl):
-  torch.save(mdl.state_dict(), "tmp.pt")
-  print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
-  os.remove('tmp.pt')
+# for epoch in range(start_epoch, start_epoch+200):
+#     train(epoch)
+#     test(epoch)
+#     scheduler.step()
 
 
-# Save the model
-torch.save(net.state_dict(), 'resnet18_weights.pth')
+
+
+# # Save the model
+# torch.save(net.state_dict(), 'resnet18_weights.pth')
+
+# Load the model
+
+net.load_state_dict(torch.load('resnet18_weights_predefined.pth'))
 print_model_size(net)
 
-# Move the model to the CPU for quantization
-net.to('cpu')
+# # Move the model to the CPU for quantization
+# net.to('cpu')
 
-# Post Training Static Quantization
-backend = "fbgemm"
-net.qconfig = torch.quantization.get_default_qconfig(backend)
-torch.backends.quantized.engine = backend
-net_static_quantized = torch.quantization.prepare(net, inplace = False)
-net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
+# # Post Training Static Quantization
+# backend = "fbgemm"
+# net.qconfig = torch.quantization.get_default_qconfig(backend)
+# torch.backends.quantized.engine = backend
+# net_static_quantized = torch.quantization.prepare(net, inplace = False)
+# net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
-# SAve the quantized model
-torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
-print_model_size(net_static_quantized)
+# # SAve the quantized model
+# torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
+# print_model_size(net_static_quantized)
