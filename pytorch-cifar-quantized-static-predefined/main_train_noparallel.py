@@ -166,7 +166,7 @@ def test(epoch):
 # torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
 
 # # Load the model
-net.load_state_dict(torch.load('resnet18_noparallel_weights_predefined.pth'))
+net.load_state_dict(torch.load('resnet18_noparallel_weights.pth'))
 print_model_size(net)
 
 # # Move the model to the CPU for quantization
