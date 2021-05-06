@@ -180,7 +180,7 @@ net_static_quantized = torch.quantization.prepare(net, inplace = False)
 net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
 # # Save the quantized model
-torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
+torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
 
 # Accuracy of non-quantized model
