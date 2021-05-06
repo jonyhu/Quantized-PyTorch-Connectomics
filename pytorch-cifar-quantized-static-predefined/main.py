@@ -154,6 +154,12 @@ for epoch in range(start_epoch, start_epoch+200):
     test(epoch)
     scheduler.step()
 
+def print_model_size(mdl):
+  torch.save(mdl.state_dict(), "tmp.pt")
+  print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
+  os.remove('tmp.pt')
+
+
 # Save the model
 torch.save(net.state_dict(), 'resnet18_weights.pth')
 print_model_size(net)
