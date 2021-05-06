@@ -154,19 +154,19 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+10):
-    train(epoch)
-    test(epoch)
-    scheduler.step()
+# for epoch in range(start_epoch, start_epoch+10):
+#     train(epoch)
+#     test(epoch)
+#     scheduler.step()
 
 
 
 
-# Save the model after training for 200 epochs
-torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
+# # Save the model after training for 200 epochs
+# torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
 
 # # Load the model
-# net.load_state_dict(torch.load('resnet18_weights_predefined.pth'))
+net.load_state_dict(torch.load('resnet18_noparallel_weights_predefined.pth'))
 print_model_size(net)
 
 # # Move the model to the CPU for quantization
@@ -183,11 +183,13 @@ net_static_quantized = torch.quantization.convert(net_static_quantized, inplace 
 torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
 
+device = 'cpu'
+
 # Accuracy of non-quantized model
 net.to('cpu')
 test(1)
 
-# Accuracy of qunatized model
-net = net_static_quantized
-net.to('cpu')
-test(1)
+# # Accuracy of qunatized model
+# net = net_static_quantized
+# net.to('cpu')
+# test(1)
