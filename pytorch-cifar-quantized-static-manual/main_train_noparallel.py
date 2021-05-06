@@ -62,7 +62,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-# net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -76,7 +76,7 @@ print('==> Building model..')
 # net = EfficientNetB0()
 # net = RegNetX_200MF()
 # net = SimpleDLA()
-net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
+# net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
 net = net.to(device)
 if device == 'cuda':
     cudnn.benchmark = True
@@ -185,6 +185,8 @@ net_static_quantized = torch.quantization.convert(net_static_quantized, inplace 
 # # Save the quantized model
 torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quantized_weights.pth')
 print_model_size(net_static_quantized)
+
+
 
 # # Accuracy of qunatized model
 net = net_static_quantized

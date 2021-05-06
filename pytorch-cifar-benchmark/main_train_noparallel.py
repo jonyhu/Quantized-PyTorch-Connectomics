@@ -62,7 +62,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-# net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -76,7 +76,7 @@ print('==> Building model..')
 # net = EfficientNetB0()
 # net = RegNetX_200MF()
 # net = SimpleDLA()
-net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
+# net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
 net = net.to(device)
 if device == 'cuda':
     cudnn.benchmark = True
@@ -155,7 +155,7 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+300):
+for epoch in range(start_epoch, start_epoch+1):
     train(epoch)
     test(epoch)
     scheduler.step()
