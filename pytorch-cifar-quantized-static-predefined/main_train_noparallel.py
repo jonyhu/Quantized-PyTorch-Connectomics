@@ -184,13 +184,8 @@ torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quanti
 print_model_size(net_static_quantized)
 
 # Accuracy of non-quantized model
-with profiler.profile(profile_memory=True, record_shapes=True) as prof:
-    with profiler.record_function("Non-quantized Inference"):
-        test(1)
+test(1)
 
 # # Accuracy of qunatized model
-    net = net_static_quantized
-    with profiler.record_function("Quantized Model Inference"):
-        test(1)
-
-print(prof.key_averages().table(sort_by="cpu_memory_usage", row_limit=30))
+net = net_static_quantized
+test(1)
