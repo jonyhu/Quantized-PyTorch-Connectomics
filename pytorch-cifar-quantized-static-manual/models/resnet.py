@@ -16,6 +16,8 @@ class BasicBlock(nn.Module):
 
     def __init__(self, in_planes, planes, stride=1):
         super(BasicBlock, self).__init__()
+        # QuantStub converts tensors from floating point to quantized
+        self.quant = torch.quantization.QuantStub()
         self.conv1 = nn.Conv2d(
             in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
@@ -30,12 +32,16 @@ class BasicBlock(nn.Module):
                           kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(self.expansion*planes)
             )
+        # DeQuantStub converts tensors from quantized to floating point
+        self.dequant = torch.quantization.DeQuantStub()
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.dequant(x)
+        out = F.relu(self.bn1(self.conv1(out)))
         out = self.bn2(self.conv2(out))
         out += self.shortcut(x)
         out = F.relu(out)
+        out = self.dequant(out)
         return out
 
 

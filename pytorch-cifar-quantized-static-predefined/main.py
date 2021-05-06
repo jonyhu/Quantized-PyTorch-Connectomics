@@ -172,7 +172,7 @@ print_model_size(net)
 
 # # Move the model to the CPU for quantization
 net.to('cpu')
-
+net.eval()
 # # Post Training Static Quantization
 backend = "fbgemm"
 net.qconfig = torch.quantization.get_default_qconfig(backend)

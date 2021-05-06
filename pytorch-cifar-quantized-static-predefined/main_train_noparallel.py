@@ -155,7 +155,7 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+300):
+for epoch in range(start_epoch, start_epoch+1):
     train(epoch)
     test(epoch)
     scheduler.step()
@@ -176,6 +176,7 @@ net.to('cpu')
 test(1)
 
 # # Post Training Static Quantization
+net.eval()
 backend = "fbgemm"
 net.qconfig = torch.quantization.get_default_qconfig(backend)
 torch.backends.quantized.engine = backend
