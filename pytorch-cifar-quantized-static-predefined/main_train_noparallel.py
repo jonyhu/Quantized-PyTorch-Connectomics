@@ -185,11 +185,11 @@ print_model_size(net_static_quantized)
 
 device = 'cpu'
 
-# Accuracy of non-quantized model
-net.to('cpu')
-test(1)
-
-# # Accuracy of qunatized model
-# net = net_static_quantized
+# # Accuracy of non-quantized model
 # net.to('cpu')
 # test(1)
+
+# # Accuracy of qunatized model
+net = net_static_quantized
+net.to('cpu')
+test(1)
