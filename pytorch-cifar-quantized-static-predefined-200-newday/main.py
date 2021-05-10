@@ -7,6 +7,7 @@ import torch.backends.cudnn as cudnn
 
 import torchvision
 import torchvision.transforms as transforms
+import torch.autograd.profiler as profiler
 
 import os
 import argparse
@@ -15,11 +16,11 @@ from models import *
 from utils import progress_bar
 
 
+
 def print_model_size(mdl):
   torch.save(mdl.state_dict(), "tmp.pt")
   print("%.2f MB" %(os.path.getsize("tmp.pt")/1e6))
   os.remove('tmp.pt')
-
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -48,12 +49,12 @@ transform_test = transforms.Compose([
 trainset = torchvision.datasets.CIFAR10(
     root='./data', train=True, download=True, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=128, shuffle=True, num_workers=2)
+    trainset, batch_size=128, shuffle=True, num_workers=1)
 
 testset = torchvision.datasets.CIFAR10(
     root='./data', train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=100, shuffle=False, num_workers=2)
+    testset, batch_size=100, shuffle=False, num_workers=1)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer',
            'dog', 'frog', 'horse', 'ship', 'truck')
@@ -78,7 +79,6 @@ print('==> Building model..')
 net = torchvision.models.quantization.resnet18(pretrained=False, quantize=False)
 net = net.to(device)
 if device == 'cuda':
-    net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
 if args.resume:
@@ -155,42 +155,53 @@ def test(epoch):
         best_acc = acc
 
 
-# for epoch in range(start_epoch, start_epoch+200):
-#     train(epoch)
-#     test(epoch)
-#     scheduler.step()
+for epoch in range(start_epoch, start_epoch+200):
+    train(epoch)
+    test(epoch)
+    scheduler.step()
 
 
+# Code written below by Jonathan Hu
 
-
-# # Save the model after training for 200 epochs
-# torch.save(net.state_dict(), 'resnet18_weights.pth')
+# Save the model after training for 200 epochs
+torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')
 
 # Load the model
-net.load_state_dict(torch.load('resnet18_weights_predefined.pth'))
+# net.load_state_dict(torch.load('resnet18_noparallel_weights.pth'))
+
+# Move the model and tensors to the CPU for quantization
+device = 'cpu'
+net.to('cpu')
+
+# Print size of the non-quantized model
 print_model_size(net)
 
-# # Move the model to the CPU for quantization
-net.to('cpu')
+# Test accuracy and inference speed of the non-quantized model
+test(1)
+
+## Post Training Static Quantization
+print("Beginning post training quantization")
 net.eval()
-# # Post Training Static Quantization
+print("Fusing the modules")
+net.fuse_model()
 backend = "fbgemm"
 net.qconfig = torch.quantization.get_default_qconfig(backend)
 torch.backends.quantized.engine = backend
+print("Preparing the model")
 net_static_quantized = torch.quantization.prepare(net, inplace = False)
+net_static_quantized.eval()
+print("Calibrating the model")
+for batch, target in trainloader:
+    net_static_quantized(batch)
+print("Converting the non-quantized model to quantized")
 net_static_quantized = torch.quantization.convert(net_static_quantized, inplace = False)
 
-# # SAve the quantized model
-torch.save(net_static_quantized.state_dict(), 'resnet18_static_quantized_weights.pth')
+# # Save the quantized model
+torch.save(net_static_quantized.state_dict(), 'resnet18_noparallel_static_quantized_weights.pth')
+
+# Print size of the quantized model
 print_model_size(net_static_quantized)
 
-device = 'cpu'
-
-# Accuracy of non-quantized model
-net.to('cpu')
-test(1)
-
-# Accuracy of qunatized model
+# Test accuracy and inference speed of the quantized model
 net = net_static_quantized
-net.to('cpu')
 test(1)
