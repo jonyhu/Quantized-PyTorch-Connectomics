@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''ResNet in PyTorch.
 
 For Pre-activation ResNet, see 'preact_resnet.py'.

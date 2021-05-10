@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''SENet in PyTorch.
 
 SENet is the winner of ImageNet-2017. The paper is not released yet.

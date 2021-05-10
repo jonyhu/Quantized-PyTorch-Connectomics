@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''PNASNet in PyTorch.
 
 Paper: Progressive Neural Architecture Search

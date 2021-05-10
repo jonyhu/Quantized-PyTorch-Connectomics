@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''RegNet in PyTorch.
 
 Paper: "Designing Network Design Spaces".

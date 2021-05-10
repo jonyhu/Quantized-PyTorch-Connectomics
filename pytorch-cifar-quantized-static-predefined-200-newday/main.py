@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''Train CIFAR10 with PyTorch.'''
 import torch
 import torch.nn as nn
@@ -161,7 +162,7 @@ for epoch in range(start_epoch, start_epoch+200):
     scheduler.step()
 
 
-# Code written below by Jonathan Hu
+# Code below was written by Jonathan Hu
 
 # Save the model after training for 200 epochs
 torch.save(net.state_dict(), 'resnet18_noparallel_weights.pth')

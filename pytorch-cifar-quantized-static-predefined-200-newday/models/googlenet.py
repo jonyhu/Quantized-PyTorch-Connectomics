@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''GoogLeNet with PyTorch.'''
 import torch
 import torch.nn as nn

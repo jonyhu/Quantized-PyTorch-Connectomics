@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''Pre-activation ResNet in PyTorch.
 
 Reference:

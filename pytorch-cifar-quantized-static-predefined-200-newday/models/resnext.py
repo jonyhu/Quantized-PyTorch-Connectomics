@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''ResNeXt in PyTorch.
 
 See the paper "Aggregated Residual Transformations for Deep Neural Networks" for more details.

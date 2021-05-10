@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''ShuffleNet in PyTorch.
 
 See the paper "ShuffleNet: An Extremely Efficient Convolutional Neural Network for Mobile Devices" for more details.

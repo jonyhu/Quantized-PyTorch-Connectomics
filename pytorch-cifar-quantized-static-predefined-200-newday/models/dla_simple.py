@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''Simplified version of DLA in PyTorch.
 
 Note this implementation is not identical to the original paper version.

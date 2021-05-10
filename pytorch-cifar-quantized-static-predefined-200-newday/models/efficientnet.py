@@ -1,3 +1,4 @@
+# Code below was written by kuangliu
 '''EfficientNet in PyTorch.
 
 Paper: "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks".
